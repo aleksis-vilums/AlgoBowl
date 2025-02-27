@@ -24,10 +24,18 @@ for line in file:
         rowConstraints = list(map(int, line.split()))
         secondLine = False
         thirdLine = True
+
+        #remove rows with zero constraints
+        removedRows = [i+1 for i, num in enumerate(rowConstraints) if num == 0]
+
     elif thirdLine:
         #Read the third line
         colConstraints = list(map(int, line.split()))
         thirdLine = False
+
+        #remove cols with zero constraints
+        removedCols = [i+1 for i, num in enumerate(colConstraints) if num == 0]
+
     else:
         #Read the Board
         boardRow = list(line.strip())
@@ -44,6 +52,21 @@ for line in file:
         #Reset the column index and increase the row index
         colIndex = 0
         rowIndex += 1
+
+removedCells = []
+# Iterate through the board to find removable cells
+for row in range(rowCount):
+    for col in range(colCount):
+        if board[row][col] == ".":
+            hasTree = (
+                (row > 0 and board[row - 1][col] == "T") or  # Above
+                (row < rowCount - 1 and board[row + 1][col] == "T") or  # Below
+                (col > 0 and board[row][col - 1] == "T") or  # Left
+                (col < colCount - 1 and board[row][col + 1] == "T")  # Right
+            )
+            #no tree found, remove cell
+            if not hasTree:
+                removedCells.append((row + 1, col + 1))
 
 #Close the input file
 file.close()
