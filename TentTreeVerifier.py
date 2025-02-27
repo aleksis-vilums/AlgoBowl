@@ -1,19 +1,32 @@
 import sys
 
-#Open and read the input file
-input_file = sys.argv[1]
-file = open(input_file, "r")
+#Open and read the file
+input_file = open(sys.argv[1], "r")
 
-#Variables to store input
-rowCount, colCount = 0, 0
-rowConstraints, colConstraints = [], []
+#Read the first line
+violationCountFromFile = int(input_file.readline().strip())
+
+#Read the second line
+tentCount = int(input_file.readline().strip())
+
+#Read the rest of the file
+tents = []
+for line in input_file:
+    tents.append(line.strip().split())
+
+#Close the file
+input_file.close()
+
+#Open and read second file
+input_file = open(sys.argv[2], "r")
+
 firstLine, secondLine, thirdLine = True, False, False
-rowIndex, colIndex = 0, 0
-tents, board, treeLocations = [], [], []
 tentTreePairs = {}
+board, treeLocations = [], []
+rowIndex, colIndex = 0, 0
 
 #Read the input file
-for line in file:
+for line in input_file:
     if firstLine:
         #Read the first line
         rowCount, colCount = map(int, line.split())
@@ -36,39 +49,39 @@ for line in file:
             if elem == 'T':
                 #Place tree
                 treeLocations.append((rowIndex+1, colIndex+1))
-                #Place tent to the right only if there is a '.' to the right
-                if colIndex < colCount - 1 and boardRow[colIndex + 1] == '.':
-                    tents.append((rowIndex+1, colIndex+2, 'L'))
             #Increase the column index
             colIndex += 1
         #Reset the column index and increase the row index
         colIndex = 0
         rowIndex += 1
 
-#Close the input file
-file.close()
+#Close the file
+input_file.close()
 
 #Place tents in the board
 for tent in tents:
     row, col, direction = tent
+    row = int(row)
+    col = int(col)
+
     board[row-1][col-1] = 'X'
 
     #Add tent to the tenTreePair with the corresponding tree
     if direction == 'L':
         tree = (row, col - 1)
-        tentTreePairs[tent] = tree
+        tentTreePairs[(row, col, direction)] = tree
 
     if direction == 'R':
         tree = (row, col + 1)
-        tentTreePairs[tent] = tree
+        tentTreePairs[(row, col, direction)] = tree
 
     if direction == 'U':
         tree = (row - 1, col)
-        tentTreePairs[tent] = tree
+        tentTreePairs[(row, col, direction)] = tree
 
     if direction == 'D':
         tree = (row + 1, col)
-        tentTreePairs[tent] = tree
+        tentTreePairs[(row, col, direction)] = tree
 
 #Calulate violation count
 violationCount = 0
@@ -76,6 +89,9 @@ violationCount = 0
 #Check if tent has an adjacent tent
 for tent in tents:
     row, col, direction = tent
+
+    row = int(row)
+    col = int(col)
 
     rowIndex = row - 1
     colIndex = col - 1
@@ -150,23 +166,12 @@ for j in range(colCount):
     if colSum != colConstraints[j]:
         #Violation count is the difference between the column sum and the column constraint
         violationCount += abs(colSum - colConstraints[j])
-#print row and col constraints
-print('Row Constraints: ', rowConstraints)
-print('Column Constraints: ', colConstraints)
 
-#Print the board
-for row in board:
-    print(' '.join(row))
+#Print the violation count
+print(violationCount, violationCountFromFile)
 
-#Write to output file
-output_file = sys.argv[2]
-file = open(output_file, "w")
-
-#Write the violation count to the output file
-file.write(str(violationCount) + '\n')
-#Write number of tents
-file.write(str(len(tents)) + '\n')
-#Write the tents to the output file
-for tent in tents:
-    row, col, direction = tent
-    file.write(str(row) + ' ' + str(col) + ' ' + direction + '\n')
+#Check if the violation count is equal to the violation count in the first file
+if violationCount == violationCountFromFile:
+    print("CORRECT")
+else:
+    print("INCORRECT")
