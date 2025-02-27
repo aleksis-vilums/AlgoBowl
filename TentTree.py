@@ -1,5 +1,6 @@
 import sys
 import random
+import copy
 
 #Open and read the input file
 input_file = sys.argv[1]
@@ -49,7 +50,7 @@ file.close()
 for i in range(25):
     tents, treeLocations = [], []
     tentTreePairs = {}
-    board = startBoard
+    board = copy.deepcopy(startBoard)
 
     #Iterate through the board
     for row in range(rowCount):
@@ -64,6 +65,7 @@ for i in range(25):
                         r < 1 or r >= rowCount + 1 or 
                         c < 1 or c >= colCount + 1 or 
                         board[r - 1][c - 1] == 'T' or 
+                        board[r - 1][c - 1] == 'X' or
                         r in removedRows or 
                         c in removedCols
                     )
@@ -78,6 +80,9 @@ for i in range(25):
                     #Place Tree
                     treeLocations.append((tentRow, tentCol))
                     tents.append(chosenTent)
+                    board[tentRow-1][tentCol-1] = 'X'
+
+    #print('Tents: ', tents)
 
     #Place tents in the board
     for tent in tents:
@@ -183,15 +188,15 @@ for i in range(25):
             currViolationCount += abs(colSum - colConstraints[j])
 
     #print row and col constraints
-    print('Row Constraints: ', rowConstraints)
-    print('Column Constraints: ', colConstraints)
+    #print('Row Constraints: ', rowConstraints)
+    #print('Column Constraints: ', colConstraints)
 
     #Print the board
-    for row in board:
-        print(' '.join(row))
+    #for row in board:
+        #print(' '.join(row))
 
     #Print the number of violations
-    print('Number of Violations: ', currViolationCount)
+    #print('Number of Violations: ', currViolationCount)
 
     if currViolationCount < bestViolationCount:
         bestViolationCount = currViolationCount
