@@ -78,11 +78,9 @@ for i in range(25):
                     tentRow, tentCol, direction = chosenTent
 
                     #Place Tree
-                    treeLocations.append((tentRow, tentCol))
+                    treeLocations.append((row+1, col+1))
                     tents.append(chosenTent)
                     board[tentRow-1][tentCol-1] = 'X'
-
-    #print('Tents: ', tents)
 
     #Place tents in the board
     for tent in tents:
@@ -196,7 +194,7 @@ for i in range(25):
         #print(' '.join(row))
 
     #Print the number of violations
-    #print('Number of Violations: ', currViolationCount)
+    print('Number of Violations: ', currViolationCount)
 
     if currViolationCount < bestViolationCount:
         bestViolationCount = currViolationCount
